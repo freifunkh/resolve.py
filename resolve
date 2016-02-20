@@ -53,7 +53,8 @@ def nodeinfo(node):
             else:
                 yield 'addr', addr
 
-    yield 'model', nodeinfo['hardware']['model']
+    if 'hardware' in nodeinfo:
+        yield 'model', nodeinfo['hardware']['model']
 
 #    print(json.dumps(nodeinfo, indent=4))
 
