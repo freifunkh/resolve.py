@@ -4,6 +4,7 @@ import os
 import sys
 import json
 import argparse
+import ipaddress
 import urllib.request
 
 upstream = 'http://hannover.freifunk.net/meshviewer/nodes.json'
@@ -19,6 +20,17 @@ def load(force_update=False):
     with open(tmp_file) as f:
         return json.loads(f.read())
 
+def prepare(nodes):
+    for n in nodes:
+        nodeinfo = n['nodeinfo']
+        network = nodeinfo['network']
+
+        if 'addresses' in network:
+            network['addresses'] = [ ipaddress.ip_address(a) for a in network['addresses'] ]
+
+    return nodes
+
+
 def filter_nodes(nodes, search):
     for n in nodes:
         nodeinfo = n['nodeinfo']
@@ -30,13 +42,16 @@ def filter_nodes(nodes, search):
         if network['mac'] == search:
             yield n
 
-        if 'mesh_interfaces' in network \
-           and search in network['mesh_interfaces']:
-            yield n
+        try:
+            if 'mesh_interfaces' in network \
+               and ipaddress.ip_address(search) in network['mesh_interfaces']:
+                yield n
 
-        if 'addresses' in network \
-           and search in network['addresses']:
-            yield n
+            if 'addresses' in network \
+               and ipaddress.ip_address(search) in network['addresses']:
+                yield n
+        except ValueError:
+            pass
 
 
 def nodeinfo(node):
@@ -48,7 +63,7 @@ def nodeinfo(node):
 
     if 'addresses' in network:
         for addr in network['addresses']:
-            if addr.startswith('fe80'):
+            if str(addr).startswith('fe80'):
                 yield 'll-addr', addr
             else:
                 yield 'addr', addr
@@ -84,6 +99,7 @@ if __name__ == '__main__':
 
     data = load(args.force_update)
     nodes = data['nodes'].values()
+    nodes = prepare(nodes)
 
     if args.filter is not None:
         nodes = filter_nodes(nodes, args.filter)
