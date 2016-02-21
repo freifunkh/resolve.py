@@ -39,7 +39,9 @@ def filter_nodes(nodes, search):
         if search.lower() in nodeinfo['hostname'].lower():
             yield n
 
-        if network['mac'] == search:
+        remove_signs = lambda x: x.replace(':', '').replace('-', '')
+
+        if remove_signs(search) == remove_signs(network['mac']):
             yield n
 
         try:
