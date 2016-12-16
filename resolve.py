@@ -7,8 +7,9 @@ import argparse
 import ipaddress
 import urllib.request
 
-upstream = 'http://hannover.freifunk.net/meshviewer/nodes.json'
+upstream = 'http://hannover.freifunk.net:8079/nodes.json'
 tmp_file = '/tmp/nodes.json'
+
 
 def load(force_update=False):
     if not os.path.exists(tmp_file) or force_update:
