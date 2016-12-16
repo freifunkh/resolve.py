@@ -76,10 +76,18 @@ def nodeinfo(node):
     if 'hardware' in nodeinfo:
         yield 'model', nodeinfo['hardware']['model']
 
+    if 'software' in nodeinfo:
+        software = nodeinfo['software']
+
+        if 'fastd' in software:
+            yield 'fastd_enabled', ('true'
+                                    if software['fastd']['enabled']
+                                    else 'false')
+
 
 def print_nodeinfo(nodeinfo):
     for n in nodeinfo:
-        print('{:>12}: {}'.format(*n))
+        print('{:>15}: {}'.format(*n))
 
 
 def information_printer(information):
