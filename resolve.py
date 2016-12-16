@@ -17,9 +17,10 @@ def load(force_update=False):
         response = urllib.request.urlopen(upstream).read()
         with open(tmp_file, 'wb') as f:
             f.write(response)
-    
+
     with open(tmp_file) as f:
         return json.loads(f.read())
+
 
 def prepare(nodes):
     for n in nodes:
@@ -27,7 +28,8 @@ def prepare(nodes):
         network = nodeinfo['network']
 
         if 'addresses' in network:
-            network['addresses'] = [ ipaddress.ip_address(a) for a in network['addresses'] ]
+            network['addresses'] = [ipaddress.ip_address(a)
+                                    for a in network['addresses']]
 
     return nodes
 
@@ -74,11 +76,11 @@ def nodeinfo(node):
     if 'hardware' in nodeinfo:
         yield 'model', nodeinfo['hardware']['model']
 
-#    print(json.dumps(nodeinfo, indent=4))
 
 def print_nodeinfo(nodeinfo):
     for n in nodeinfo:
         print('{:>12}: {}'.format(*n))
+
 
 def information_printer(information):
     def print_it(nodeinfo):
@@ -92,11 +94,15 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     parser.add_argument('-f', dest='filter', default=None,
-                        metavar='MAC/IPv6/HOSTNAME', help="filter for a specific node")
+                        metavar='MAC/IPv6/HOSTNAME',
+                        help="filter for a specific node")
     parser.add_argument('-u', dest='force_update', default=False,
-                        action='store_true', help="force update data from upstream")
+                        action='store_true',
+                        help="force update data from upstream")
     parser.add_argument('-i', dest='information', default=None,
-                        metavar='NAME', help="display only a single information machine readable")
+                        metavar='NAME',
+                        help="display only a single information "
+                        "machine readable")
 
     args = parser.parse_args()
 
@@ -108,6 +114,7 @@ if __name__ == '__main__':
         nodes = filter_nodes(nodes, args.filter)
 
     human = args.information is None
+
     def line():
         print('-'*60)
 
@@ -115,13 +122,10 @@ if __name__ == '__main__':
         printer = print_nodeinfo
     else:
         printer = information_printer(args.information)
-    
+
     for n in nodes:
         if human:
             line()
         printer(nodeinfo(n))
     if human:
         line()
-                
-        
-
