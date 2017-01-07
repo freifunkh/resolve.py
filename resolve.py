@@ -49,12 +49,13 @@ def filter_nodes(nodes, search):
             yield n
 
         try:
+            ip = ipaddress.ip_address(search)
+
             if 'mesh_interfaces' in network \
-               and ipaddress.ip_address(search) in network['mesh_interfaces']:
+               and ip in network['mesh_interfaces']:
                 yield n
 
-            if 'addresses' in network \
-               and ipaddress.ip_address(search) in network['addresses']:
+            if 'addresses' in network and ip in network['addresses']:
                 yield n
         except ValueError:
             pass
