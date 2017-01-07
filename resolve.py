@@ -33,6 +33,9 @@ def prepare(nodes):
 
     return nodes
 
+def _check_mac_equality(a, b):
+    remove_signs = lambda x: x.replace(':', '').replace('-', '')
+    return remove_signs(a) == remove_signs(b)
 
 def filter_nodes(nodes, search):
     for n in nodes:
@@ -42,9 +45,7 @@ def filter_nodes(nodes, search):
         if search.lower() in nodeinfo['hostname'].lower():
             yield n
 
-        remove_signs = lambda x: x.replace(':', '').replace('-', '')
-
-        if remove_signs(search) == remove_signs(network['mac']):
+        if _check_mac_equality(search, network['mac']):
             yield n
 
         try:
@@ -57,6 +58,14 @@ def filter_nodes(nodes, search):
                 yield n
         except ValueError:
             pass
+
+        if 'mesh' in network:
+            for mesh_definition in network['mesh'].values():
+                for iface_macs in mesh_definition['interfaces'].values():
+                    for mac in iface_macs:
+                        if _check_mac_equality(search, mac):
+                            yield n
+
 
 
 def nodeinfo(node):
@@ -72,6 +81,12 @@ def nodeinfo(node):
                 yield 'll-addr', addr
             else:
                 yield 'addr', addr
+
+    if 'mesh' in network:
+        for mesh_name, mesh_definition in network['mesh'].items():
+            for iface_name, iface_macs in mesh_definition['interfaces'].items():
+                for mac in iface_macs:
+                    yield 'secondary-mac', mac + ' (' + iface_name + ')'
 
     if 'hardware' in nodeinfo:
         yield 'model', nodeinfo['hardware']['model']
