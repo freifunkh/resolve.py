@@ -97,7 +97,7 @@ def nodeinfo(node):
 
         if 'fastd' in software:
             yield 'fastd_enabled', ('true'
-                                    if software['fastd']['enabled']
+                                    if 'enabled' in software['fastd'] and software['fastd']['enabled']
                                     else 'false')
 
 
@@ -131,7 +131,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     data = load(args.force_update)
-    nodes = data['nodes'].values()
+    nodes = data['nodes'] #.values()
     nodes = prepare(nodes)
 
     if args.filter is not None:
