@@ -100,6 +100,55 @@ def nodeinfo(node):
                                     if 'enabled' in software['fastd'] and software['fastd']['enabled']
                                     else 'false')
 
+    statistics = node['statistics']
+
+    connected_peers = []
+
+    if 'mesh_vpn' in statistics:
+        bb_peers = statistics['mesh_vpn']['groups']['backbone']['peers']
+
+        for name, conn in bb_peers.items():
+            if conn is None:
+                continue
+
+            yield 'fastd_sn', name
+
+            connected_peers += [name]
+
+    gw = None
+
+    if 'gateway' in statistics:
+
+        gw_macs = {
+            '88:e6:40:20:10:01': 'sn01',
+            '88:e6:40:20:20:01': 'sn02',
+            '88:e6:40:20:30:01': 'sn03',
+            '88:e6:40:20:40:01': 'sn04',
+            '88:e6:40:20:50:01': 'sn05',
+            '88:e6:40:20:60:01': 'sn06',
+            '88:e6:40:20:70:01': 'sn07',
+            '88:e6:40:20:80:01': 'sn08',
+            '88:e6:40:20:90:01': 'sn09'
+        }
+
+        mac = statistics['gateway']
+
+        if mac in gw_macs:
+            gw = gw_macs[mac]
+        else:
+            gw = 'unknown mac!'
+
+        yield 'dhcp_gateway', gw
+
+        rep = lambda x: x.replace('gw', '').replace('sn', '')
+
+        if len(connected_peers) != 0:
+
+            if rep(gw) in map(rep, connected_peers):
+                yield 'gw_eq_fastd', 'true'
+            else:
+                yield 'gw_eq_fastd', 'false'
+
 
 def print_nodeinfo(nodeinfo):
     for n in nodeinfo:
