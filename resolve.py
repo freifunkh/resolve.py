@@ -7,7 +7,7 @@ import argparse
 import ipaddress
 import urllib.request
 
-upstream = 'http://hannover.freifunk.net:8079/nodes.json'
+upstream = 'https://harvester.ffh.zone/nodes.json'
 tmp_file = '/tmp/nodes.json'
 
 
