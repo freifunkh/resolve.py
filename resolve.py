@@ -104,6 +104,10 @@ def nodeinfo(node):
             yield 'firmware_base', software['firmware']['base']
             yield 'firmware_rel', software['firmware']['release']
 
+        if 'autoupdater' in software:
+            yield 'autoupdater_br', software['autoupdater'].get('branch', 'None')
+            yield 'autoupdater_en', software['autoupdater'].get('enabled', False)
+
     statistics = node['statistics']
 
     connected_peers = []
