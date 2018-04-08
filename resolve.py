@@ -100,6 +100,10 @@ def nodeinfo(node):
                                     if 'enabled' in software['fastd'] and software['fastd']['enabled']
                                     else 'false')
 
+        if 'firmware' in software:
+            yield 'firmware_base', software['firmware']['base']
+            yield 'firmware_rel', software['firmware']['release']
+
     statistics = node['statistics']
 
     connected_peers = []
