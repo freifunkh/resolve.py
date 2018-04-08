@@ -89,7 +89,7 @@ def nodeinfo(node):
                 for mac in iface_macs:
                     yield 'secondary-mac', mac + ' (' + iface_name + ')'
 
-    if 'hardware' in nodeinfo:
+    if 'hardware' in nodeinfo and 'model' in nodeinfo['hardware']:
         yield 'model', nodeinfo['hardware']['model']
 
     if 'software' in nodeinfo:
