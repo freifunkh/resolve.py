@@ -80,6 +80,11 @@ def nodeinfo(node):
 
     yield 'hostname', nodeinfo['hostname']
     yield 'primary-mac', network['mac']
+    nodeid = network['mac'].replace(':', '')
+    yield 'node-id', nodeid
+    yield 'map-link', 'https://hannover.freifunk.net/karte/#!v:m;n:{}'.format(nodeid)
+    yield 'stats-link', 'https://stats.ffh.zone/d/000000021/router-fur-meshviewer?var-node={}'.format(nodeid)
+
     yield 'online', str(node['flags']['online'])
 
     if 'addresses' in network:
