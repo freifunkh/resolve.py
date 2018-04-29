@@ -42,6 +42,9 @@ def filter_nodes(nodes, search):
         nodeinfo = n['nodeinfo']
         network = nodeinfo['network']
 
+        if search == n['nodeinfo']['software']['firmware']['release']:
+            yield n
+
         if search.lower() in nodeinfo['hostname'].lower():
             yield n
 
