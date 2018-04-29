@@ -80,6 +80,7 @@ def nodeinfo(node):
 
     yield 'hostname', nodeinfo['hostname']
     yield 'primary-mac', network['mac']
+    yield 'online', str(node['flags']['online'])
 
     if 'addresses' in network:
         for addr in network['addresses']:
@@ -87,6 +88,8 @@ def nodeinfo(node):
                 yield 'll-addr', addr
             else:
                 yield 'addr', addr
+
+    yield 'lastseen', node['lastseen']
 
     if 'mesh' in network:
         for mesh_name, mesh_definition in network['mesh'].items():
