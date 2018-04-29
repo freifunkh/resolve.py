@@ -51,17 +51,19 @@ def filter_nodes(nodes, search):
         if _check_mac_equality(search, network['mac']):
             yield n
 
-        try:
-            ip = ipaddress.ip_address(search)
+        if network is not None:
+            try:
+                ip = ipaddress.ip_address(search)
 
-            if 'mesh_interfaces' in network \
-               and ip in network['mesh_interfaces']:
-                yield n
+                if 'mesh_interfaces' in network \
+                   and network['mesh_interfaces'] is not None \
+                   and ip in network['mesh_interfaces']:
+                    yield n
 
-            if 'addresses' in network and ip in network['addresses']:
-                yield n
-        except ValueError:
-            pass
+                if 'addresses' in network and ip in network['addresses']:
+                    yield n
+            except ValueError:
+                pass
 
         if 'mesh' in network:
             for mesh_definition in network['mesh'].values():
