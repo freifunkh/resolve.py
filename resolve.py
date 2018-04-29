@@ -175,6 +175,16 @@ def print_nodeinfo(nodeinfo):
     for n in nodeinfo:
         print('{:>15}: {}'.format(*n))
 
+def print_bat_hosts(nodeinfo):
+    hostname = None
+    i = 0
+    for k, v in nodeinfo:
+        if k == 'hostname':
+            hostname = v.replace(' ','_')
+        if k == 'secondary-mac':
+            i += 1
+            t = v.split(' ')[1][1]
+            print(v.split(' ')[0], hostname+'_'+'('+t+')'+str(i))
 
 def information_printer(information):
     def print_it(nodeinfo):
@@ -197,6 +207,9 @@ if __name__ == '__main__':
                         metavar='NAME',
                         help="display only a single information "
                         "machine readable")
+    parser.add_argument('--gen-bat-hosts', dest='gen_bat_hosts', default=False,
+                        action='store_true',
+                        help='generate a /etc/bat-hosts file')
 
     args = parser.parse_args()
 
@@ -212,7 +225,10 @@ if __name__ == '__main__':
     def line():
         print('-'*60)
 
-    if args.information is None:
+    if args.gen_bat_hosts:
+        printer = print_bat_hosts
+        human = False
+    elif args.information is None:
         printer = print_nodeinfo
     else:
         printer = information_printer(args.information)
