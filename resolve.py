@@ -4,6 +4,7 @@ import os
 import sys
 import json
 import argparse
+import datetime
 import ipaddress
 import urllib.request
 
@@ -137,6 +138,9 @@ def nodeinfo(node):
             connected_peers += [name]
 
     gw = None
+
+    if 'uptime' in statistics:
+        yield 'uptime', "{}".format(datetime.timedelta(seconds=int(statistics['uptime'])))
 
     if 'gateway' in statistics:
 
