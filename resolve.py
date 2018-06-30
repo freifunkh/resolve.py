@@ -46,11 +46,15 @@ def filter_nodes(nodes, search):
         if search == n['nodeinfo']['software']['firmware']['release']:
             yield n
 
+        if 'autoupdater' in n['nodeinfo']['software'] and search == n['nodeinfo']['software']['autoupdater'].get('branch', 'None'):
+            yield n
+
         if search.lower() in nodeinfo['hostname'].lower():
             yield n
 
         if _check_mac_equality(search, network['mac']):
             yield n
+
 
         if network is not None:
             try:
@@ -209,7 +213,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     parser.add_argument('-f', dest='filter', default=None,
-                        metavar='MAC/IPv6/HOSTNAME',
+                        metavar='MAC/IPv6/HOSTNAME/BRANCH/FW_VERSION',
                         help="filter for a specific node")
     parser.add_argument('-u', dest='force_update', default=False,
                         action='store_true',
