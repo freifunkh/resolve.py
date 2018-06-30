@@ -212,9 +212,9 @@ def information_printer(information):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('-f', dest='filter', default=None,
+    parser.add_argument('-f', dest='filter', type=str, action='append', default=[],
                         metavar='MAC/IPv6/HOSTNAME/BRANCH/FW_VERSION',
-                        help="filter for a specific node")
+                        help="filter for specific nodes")
     parser.add_argument('-u', dest='force_update', default=False,
                         action='store_true',
                         help="force update data from upstream")
@@ -232,8 +232,8 @@ if __name__ == '__main__':
     nodes = data['nodes'] #.values()
     nodes = prepare(nodes)
 
-    if args.filter is not None:
-        nodes = filter_nodes(nodes, args.filter)
+    for f in args.filter:
+        nodes = filter_nodes(nodes, f)
 
     human = args.information is None
 
