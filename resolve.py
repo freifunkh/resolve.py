@@ -109,6 +109,9 @@ def nodeinfo(node):
     if 'owner' in nodeinfo and 'contact' in nodeinfo['owner']:
         yield 'owner', nodeinfo['owner']['contact']
 
+    if 'system' in nodeinfo and 'site_code' in nodeinfo['system']:
+        yield 'site_code', nodeinfo['system']['site_code']
+
     if 'software' in nodeinfo:
         software = nodeinfo['software']
 
