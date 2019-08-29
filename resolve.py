@@ -152,27 +152,41 @@ def nodeinfo(node):
     if 'uptime' in statistics:
         yield 'uptime', "{}".format(datetime.timedelta(seconds=int(statistics['uptime'])))
 
-    if 'gateway' in statistics:
+    gw_macs = {}
+    for i in range(0, 256):
+        gw_macs.update({
+            '88:e6:40:ba:10:%02x' % i: 'sn01',
+            '88:e6:40:ba:20:%02x' % i: 'sn02',
+            '88:e6:40:ba:30:%02x' % i: 'sn03',
+            '88:e6:40:ba:40:%02x' % i: 'sn04',
+            '88:e6:40:ba:50:%02x' % i: 'sn05',
+            '88:e6:40:ba:60:%02x' % i: 'sn06',
+            '88:e6:40:ba:70:%02x' % i: 'sn07',
+            '88:e6:40:ba:80:%02x' % i: 'sn08',
+            '88:e6:40:ba:90:%02x' % i: 'sn09',
+            '88:e6:40:ba:a0:%02x' % i: 'sn10'
+        })
+        gw_macs.update({
+            '88:e6:40:20:10:%02x' % i: 'sn01',
+            '88:e6:40:20:20:%02x' % i: 'sn02',
+            '88:e6:40:20:30:%02x' % i: 'sn03',
+            '88:e6:40:20:40:%02x' % i: 'sn04',
+            '88:e6:40:20:50:%02x' % i: 'sn05',
+            '88:e6:40:20:60:%02x' % i: 'sn06',
+            '88:e6:40:20:70:%02x' % i: 'sn07',
+            '88:e6:40:20:80:%02x' % i: 'sn08',
+            '88:e6:40:20:90:%02x' % i: 'sn09',
+            '88:e6:40:20:a0:%02x' % i: 'sn10'
+        })
 
-        gw_macs = {
-            '88:e6:40:20:10:01': 'sn01',
-            '88:e6:40:20:20:01': 'sn02',
-            '88:e6:40:20:30:01': 'sn03',
-            '88:e6:40:20:40:01': 'sn04',
-            '88:e6:40:20:50:01': 'sn05',
-            '88:e6:40:20:60:01': 'sn06',
-            '88:e6:40:20:70:01': 'sn07',
-            '88:e6:40:20:80:01': 'sn08',
-            '88:e6:40:20:90:01': 'sn09',
-            '88:e6:40:20:a0:01': 'sn10'
-        }
+    if 'gateway' in statistics:
 
         mac = statistics['gateway']
 
         if mac in gw_macs:
             gw = gw_macs[mac]
         else:
-            gw = 'unknown mac!'
+            gw = 'unknown mac! (' + mac + ')'
 
         yield 'dhcp_gateway', gw
 
@@ -185,6 +199,16 @@ def nodeinfo(node):
             else:
                 yield 'gw_eq_fastd', 'false'
 
+    if 'gateway6' in statistics:
+
+        mac = statistics['gateway6']
+
+        if mac in gw_macs:
+            gw = gw_macs[mac]
+        else:
+            gw = 'unknown mac! (' + mac + ')'
+
+        yield 'radv_gateway', gw
 
 def print_nodeinfo(nodeinfo):
     for n in nodeinfo:
