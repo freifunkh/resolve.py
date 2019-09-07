@@ -110,7 +110,7 @@ def nodeinfo(node):
     if 'hardware' in nodeinfo and 'model' in nodeinfo['hardware']:
         yield 'model', nodeinfo['hardware']['model']
 
-    if 'owner' in nodeinfo and 'contact' in nodeinfo['owner']:
+    if 'owner' in nodeinfo and nodeinfo['owner'] is not None and 'contact' in nodeinfo['owner']:
         yield 'owner', nodeinfo['owner']['contact']
 
     if 'system' in nodeinfo and 'site_code' in nodeinfo['system']:
