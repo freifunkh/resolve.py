@@ -70,7 +70,7 @@ def filter_nodes(nodes, search):
             except ValueError:
                 pass
 
-        if 'mesh' in network:
+        if 'mesh' in network and network['mesh'] is not None:
             for mesh_definition in network['mesh'].values():
                 for iface_macs in mesh_definition['interfaces'].values():
                     for mac in iface_macs:
@@ -101,7 +101,7 @@ def nodeinfo(node):
 
     yield 'lastseen', node['lastseen']
 
-    if 'mesh' in network:
+    if 'mesh' in network and network['mesh'] is not None:
         for mesh_name, mesh_definition in network['mesh'].items():
             for iface_name, iface_macs in mesh_definition['interfaces'].items():
                 for mac in iface_macs:
@@ -124,11 +124,12 @@ def nodeinfo(node):
                                     if 'enabled' in software['fastd'] and software['fastd']['enabled']
                                     else 'false')
 
-        if 'firmware' in software:
-            yield 'firmware_base', software['firmware']['base']
+        if 'firmware' in software and software['firmware'] is not None:
+            if 'base' in software['firmware'] and software['firmware']['base'] is not None:
+                yield 'firmware_base', software['firmware']['base']
             yield 'firmware_rel', software['firmware']['release']
 
-        if 'autoupdater' in software:
+        if 'autoupdater' in software and software['firmware'] is not None:
             yield 'autoupdater_br', software['autoupdater'].get('branch', 'None')
             yield 'autoupdater_en', software['autoupdater'].get('enabled', False)
 
