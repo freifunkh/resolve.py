@@ -49,6 +49,10 @@ def filter_nodes(nodes, search):
         if 'autoupdater' in n['nodeinfo']['software'] and search == n['nodeinfo']['software']['autoupdater'].get('branch', 'None'):
             yield n
 
+        if search.lower().startswith('=='):
+            if search[2:].lower() == nodeinfo['hostname'].lower():
+                yield n
+
         if search.lower() in nodeinfo['hostname'].lower():
             yield n
 
