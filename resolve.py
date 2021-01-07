@@ -138,15 +138,27 @@ def nodeinfo(node):
     connected_peers = []
 
     if 'mesh_vpn' in statistics:
-        bb_peers = statistics['mesh_vpn']['groups']['backbone']['peers']
+        mesh_vpn = statistics['mesh_vpn']
+        if 'groups' in mesh_vpn:
+            bb_peers = mesh_vpn['groups']['backbone']['peers']
 
-        for name, conn in bb_peers.items():
-            if conn is None:
-                continue
+            for name, conn in bb_peers.items():
+                if conn is None:
+                    continue
 
-            yield 'fastd_sn', name
+                yield 'fastd_sn', name
 
-            connected_peers += [name]
+                connected_peers += [name]
+        if 'peers' in mesh_vpn:
+            bb_peers = mesh_vpn['peers']
+
+            for name, conn in bb_peers.items():
+                if conn is None:
+                    continue
+
+                yield 'fastd_sn', name
+
+                connected_peers += [name]
 
     gw = None
 
