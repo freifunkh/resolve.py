@@ -93,6 +93,10 @@ def nodeinfo(node):
     yield 'node-id', nodeid
     yield 'map-link', 'https://hannover.freifunk.net/karte/#/de/map/{}'.format(nodeid)
     yield 'stats-link', 'https://stats.ffh.zone/d/000000021/router-fur-meshviewer?var-node={}'.format(nodeid)
+    if 'addresses' in network:
+        for addr in network['addresses']:
+            if not str(addr).startswith('fe80'):
+                yield 'status-link', f'http://[{addr}]/'
 
     yield 'online', str(node['flags']['online'])
 
