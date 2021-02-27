@@ -20,6 +20,9 @@ def load(force_update=False):
         response = urllib.request.urlopen(upstream).read()
         with open(tmp_file, 'wb') as f:
             f.write(response)
+    else:
+        sys.stderr.write('Using cached data from {}...\n'.format(tmp_file))
+
 
     with open(tmp_file) as f:
         return json.loads(f.read())
@@ -280,9 +283,9 @@ if __name__ == '__main__':
     parser.add_argument('-f', dest='filter', type=str, action='append', default=[],
                         metavar='MAC/IPv6/HOSTNAME/BRANCH/FW_VERSION',
                         help="filter for specific nodes")
-    parser.add_argument('-u', dest='force_update', default=False,
-                        action='store_true',
-                        help="force update data from upstream")
+    parser.add_argument('-c', dest='force_update', default=True,
+                        action='store_false',
+                        help="try to use cached nodes json (from previous run of this tool)")
     parser.add_argument('-i', dest='information', default=None,
                         metavar='NAME',
                         help="display only a single information "
