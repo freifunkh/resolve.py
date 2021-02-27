@@ -3,8 +3,10 @@
 import os
 import sys
 import json
+import pytz
 import argparse
 import datetime
+import dateutil.parser
 import ipaddress
 import urllib.request
 
@@ -81,6 +83,20 @@ def filter_nodes(nodes, search):
                         if _check_mac_equality(search, mac):
                             yield n
 
+def format_ago(event_time):
+
+    delta = datetime.datetime.now(pytz.utc) - event_time
+
+    if delta.total_seconds() > 24*60*60:
+        return "%d days ago" % (delta.total_seconds() / 24 / 60 / 60)
+
+    if delta.total_seconds() > 60*60:
+        return "%d hrs ago" % (delta.total_seconds() / 60 / 60)
+
+    if delta.total_seconds() > 60:
+        return "%d min ago" % (delta.total_seconds() / 60)
+
+    return "%d s ago" % delta.total_seconds()
 
 
 def nodeinfo(node):
@@ -107,7 +123,11 @@ def nodeinfo(node):
             else:
                 yield 'addr', addr
 
-    yield 'lastseen', node['lastseen']
+    if human:
+        last_seen_time = dateutil.parser.parse(node['lastseen'])
+        yield 'lastseen', format_ago(last_seen_time)
+    else:
+        yield 'lastseen', node['lastseen']
 
     if 'mesh' in network and network['mesh'] is not None:
         for mesh_name, mesh_definition in network['mesh'].items():
