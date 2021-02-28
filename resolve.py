@@ -111,7 +111,7 @@ def nodeinfo(node):
     nodeid = network['mac'].replace(':', '')
     yield 'node-id', nodeid
     yield 'map-link', 'https://hannover.freifunk.net/karte/#/de/map/{}'.format(nodeid)
-    yield 'stats-link', 'https://stats.ffh.zone/d/000000021/router-fur-meshviewer?var-node={}'.format(nodeid)
+    yield 'stats-link', 'https://stats.ffh.zone/d/EGysRPsMz/router-fur-meshviewer?var-node={}'.format(nodeid)
     if 'addresses' in network:
         for addr in network['addresses']:
             if not str(addr).startswith('fe80'):
