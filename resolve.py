@@ -86,6 +86,28 @@ def filter_nodes(nodes, search):
                         if _check_mac_equality(search, mac):
                             yield n
 
+def get_path(obj, path, default=None):
+    parts = path.split('.')
+    it = obj
+
+    for part in parts:
+        assert type(it) == dict, 'Invalid path. Cannot dive into ' + path + '. obj is not dict.'
+
+        if part not in it:
+            return default
+
+        it = it[part]
+
+    return it
+        
+
+def filter_model(nodes, search):
+    for n in nodes:
+        model = get_path(n, 'nodeinfo.hardware.model')
+
+        if model and search.lower() in model.lower():
+            yield n
+
 def format_ago(event_time):
 
     delta = datetime.datetime.now(pytz.utc) - event_time
@@ -283,6 +305,8 @@ if __name__ == '__main__':
     parser.add_argument('-f', dest='filter', type=str, action='append', default=[],
                         metavar='MAC/IPv6/HOSTNAME/BRANCH/FW_VERSION',
                         help="filter for specific nodes")
+    parser.add_argument('-m', dest='filter_model', type=str, action='append', default=[],
+                        metavar='MODEL', help="filter for specific nodes by hardware model")
     parser.add_argument('-c', dest='force_update', default=True,
                         action='store_false',
                         help="try to use cached nodes json (from previous run of this tool)")
@@ -302,6 +326,9 @@ if __name__ == '__main__':
 
     for f in args.filter:
         nodes = filter_nodes(nodes, f)
+
+    for m in args.filter_model:
+        nodes = filter_model(nodes, m)
 
     human = args.information is None
 
