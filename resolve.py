@@ -10,7 +10,7 @@ import dateutil.parser
 import ipaddress
 import urllib.request
 
-upstream = 'https://harvester.ffh.zone/nodes.json'
+upstream = 'https://harvester.ffh.zone/api/nodes.json'
 tmp_file = '/tmp/nodes.json'
 
 
