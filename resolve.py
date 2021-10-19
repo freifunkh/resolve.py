@@ -102,11 +102,24 @@ def get_path(obj, path, default=None):
         
 
 def filter_model(nodes, search):
-    for n in nodes:
-        model = get_path(n, 'nodeinfo.hardware.model')
+    yield from filter_value(nodes, 'model', search)
 
-        if model and search.lower() in model.lower():
+def filter_value(nodes, search_key, search_value, exact=True):
+    for n in nodes:
+        for fact, value in nodeinfo(n):
+            if fact != search_key:
+                continue
+
+            if exact:
+                check = lambda a, b: (a == b)
+            else:
+                check = lambda a, b: (a in b)
+
+            if not check(search_value, value):
+                continue
+
             yield n
+
 
 def format_ago(event_time):
 
@@ -307,6 +320,8 @@ if __name__ == '__main__':
                         help="filter for specific nodes")
     parser.add_argument('-m', dest='filter_model', type=str, action='append', default=[],
                         metavar='MODEL', help="filter for specific nodes by hardware model")
+    parser.add_argument('-q', dest='query', type=str, action='append', default=[],
+                        metavar='QUERY', help="filter nodes by querying for specific information. \ne.g. specify -q \"hostname=foobar\" to query for hosts named \"foobar\" or -q \"hostname~foo\" to query hosts whose name contains \"foo\". You can query for all information, that is available (hostname, model, secondary-mac, autoupdater_en, ...).")
     parser.add_argument('-c', dest='force_update', default=True,
                         action='store_false',
                         help="try to use cached nodes json (from previous run of this tool)")
@@ -329,6 +344,23 @@ if __name__ == '__main__':
 
     for m in args.filter_model:
         nodes = filter_model(nodes, m)
+
+    for q in args.query:
+        if '=' in q:
+            q_ = q.split('=', 1)
+            exact = True
+        elif '~' in q:
+            q_ = q.split('~', 1)
+            exact = False
+        else:
+            raise Exception('Query ' + q + ' is invalid. A \'=\' or a \'~\' sign is missing.')
+
+        if q_[1] == 'true':
+            q_[1] = True
+        elif q_[1] == 'false':
+            q_[1] = False
+
+        nodes = filter_value(nodes, q_[0], q_[1], exact)
 
     human = args.information is None
 
