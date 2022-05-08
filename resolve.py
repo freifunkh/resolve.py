@@ -104,7 +104,7 @@ def get_path(obj, path, default=None):
 def filter_model(nodes, search):
     yield from filter_value(nodes, 'model', search)
 
-def filter_value(nodes, search_key, search_value, exact=True):
+def filter_value(nodes, search_key, search_value, exact=True, invert=False):
     for n in nodes:
         for fact, value in nodeinfo(n):
             if fact != search_key:
@@ -115,7 +115,12 @@ def filter_value(nodes, search_key, search_value, exact=True):
             else:
                 check = lambda a, b: (a in b)
 
-            if not check(search_value, value):
+            result = check(search_value, value)
+
+            if invert:
+                result = not result
+
+            if not result:
                 continue
 
             yield n
@@ -321,7 +326,7 @@ if __name__ == '__main__':
     parser.add_argument('-m', dest='filter_model', type=str, action='append', default=[],
                         metavar='MODEL', help="filter for specific nodes by hardware model")
     parser.add_argument('-q', dest='query', type=str, action='append', default=[],
-                        metavar='QUERY', help="filter nodes by querying for specific information. \ne.g. specify -q \"hostname=foobar\" to query for hosts named \"foobar\" or -q \"hostname~foo\" to query hosts whose name contains \"foo\". You can query for all information, that is available (hostname, model, secondary-mac, autoupdater_en, ...).")
+                        metavar='QUERY', help="filter nodes by querying for specific information. \ne.g. specify -q \"hostname=foobar\" to query for hosts named \"foobar\" or -q \"hostname~foo\" to query hosts whose name contains \"foo\". You can query for all information, that is available (hostname, model, secondary-mac, autoupdater_en, ...). Negating queries is possible using \"!=\" or \"!~\".")
     parser.add_argument('-c', dest='force_update', default=True,
                         action='store_false',
                         help="try to use cached nodes json (from previous run of this tool)")
@@ -355,12 +360,17 @@ if __name__ == '__main__':
         else:
             raise Exception('Query ' + q + ' is invalid. A \'=\' or a \'~\' sign is missing.')
 
+        invert = False
+        if q_[0].endswith('!'):
+            invert = True
+            q_[0] = q_[0][:-1]
+
         if q_[1] == 'true':
             q_[1] = True
         elif q_[1] == 'false':
             q_[1] = False
 
-        nodes = filter_value(nodes, q_[0], q_[1], exact)
+        nodes = filter_value(nodes, q_[0], q_[1], exact, invert)
 
     human = args.information is None
 
