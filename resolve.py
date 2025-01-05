@@ -48,7 +48,7 @@ def filter_nodes(nodes, search):
         nodeinfo = n['nodeinfo']
         network = nodeinfo['network']
 
-        if search == n['nodeinfo']['software']['firmware']['release']:
+        if 'release' in n['nodeinfo']['software']['firmware'] and search == n['nodeinfo']['software']['firmware']['release']:
             yield n
 
         if 'autoupdater' in n['nodeinfo']['software'] and search == n['nodeinfo']['software']['autoupdater'].get('branch', 'None'):
