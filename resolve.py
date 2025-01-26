@@ -198,7 +198,8 @@ def nodeinfo(node):
         if 'firmware' in software and software['firmware'] is not None:
             if 'base' in software['firmware'] and software['firmware']['base'] is not None:
                 yield 'firmware_base', software['firmware']['base']
-            yield 'firmware_rel', software['firmware']['release']
+            if 'release' in software['firmware']:
+                yield 'firmware_rel', software['firmware']['release']
 
         if 'autoupdater' in software and software['firmware'] is not None:
             yield 'autoupdater_br', software['autoupdater'].get('branch', 'None')
