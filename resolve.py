@@ -310,6 +310,49 @@ def print_bat_hosts(nodeinfo):
             t = v.split(' ')[1][1]
             print(v.split(' ')[0], hostname+'_'+'('+t+')'+str(i))
 
+def print_netbox_devices(nodeinfo):
+    name = None
+    device_role = "Router"
+    manufacturer = None
+    device_type = None
+    status = None
+    site = "FWH"
+
+    for k, v in nodeinfo:
+        if k == 'hostname':
+            name = v
+
+        if k == 'model':
+            x = v.split(" ")
+            manufacturer = x[0]
+            device_type = " ".join(x[1:])
+
+        if k == 'online':
+            status = 'active' if v else 'offline'
+
+    print(f"{name},{device_role},{manufacturer},{device_type},{status},{site}")
+
+def print_netbox_device_types(nodeinfo):
+    manufacturer = None
+    model = None
+    slug = ""
+    u_height = 1
+
+    for k, v in nodeinfo:
+        if k == 'hostname':
+            name = v
+
+        if k == 'model':
+            x = v.split(" ")
+            manufacturer = x[0]
+            model = " ".join(x[1:])
+
+        if k == 'online':
+            status = 'Active' if v else 'Offline'
+
+    print(f"{manufacturer},{model},{slug},{u_height}")
+
+
 def information_printer(information):
     def print_it(nodeinfo):
         for k, v in nodeinfo:
@@ -338,6 +381,12 @@ if __name__ == '__main__':
     parser.add_argument('--gen-bat-hosts', dest='gen_bat_hosts', default=False,
                         action='store_true',
                         help='generate a /etc/bat-hosts file')
+    parser.add_argument('--gen-netbox-devices', dest='gen_netbox_devices', default=False,
+                        action='store_true',
+                        help='generate a netbox import csv')
+    parser.add_argument('--gen-netbox-device-types', dest='gen_netbox_device_types', default=False,
+                        action='store_true',
+                        help='generate a netbox import csv')
 
     args = parser.parse_args()
 
@@ -381,6 +430,13 @@ if __name__ == '__main__':
     if args.gen_bat_hosts:
         printer = print_bat_hosts
         human = False
+    elif args.gen_netbox_devices:
+        print("name,device_role,manufacturer,device_type,status,site")
+        printer = print_netbox_devices
+        human = False
+    elif args.gen_netbox_device_types:
+        print("manufacturer,model,slug,u_height")
+        printer = print_netbox_device_types
     elif args.information is None:
         printer = print_nodeinfo
     else:
