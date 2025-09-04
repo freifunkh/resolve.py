@@ -195,6 +195,11 @@ def nodeinfo(node):
                                     if 'enabled' in software['fastd'] and software['fastd']['enabled']
                                     else 'false')
 
+        if 'wireguard' in software:
+            yield 'wireguard_enab', ('true'
+                                    if 'enabled' in software['wireguard'] and software['wireguard']['enabled']
+                                    else 'false')
+
         if 'firmware' in software and software['firmware'] is not None:
             if 'base' in software['firmware'] and software['firmware']['base'] is not None:
                 yield 'firmware_base', software['firmware']['base']
