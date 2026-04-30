@@ -340,6 +340,8 @@ if __name__ == '__main__':
                         metavar='NAME',
                         help="display only a single information "
                         "machine readable")
+    parser.add_argument('-s', dest='stat', default=None, metavar="NAME",
+                        help="do statisitics about the variable information specified with NAME")
     parser.add_argument('--gen-bat-hosts', dest='gen_bat_hosts', default=False,
                         action='store_true',
                         help='generate a /etc/bat-hosts file')
@@ -379,6 +381,25 @@ if __name__ == '__main__':
         nodes = filter_value(nodes, q_[0], q_[1], exact, invert)
 
     human = args.information is None
+
+    if args.stat is not None:
+        values = {}
+
+        for n in nodes:
+            for k, v in nodeinfo(n):
+                if k != args.stat:
+                    continue
+
+                if v not in values:
+                    values[v] = 0
+
+                values[v] += 1
+
+        for k, v in values.items():
+            print('{}: {}'.format(k, v))
+
+        exit(0)
+
 
     def line():
         print('-'*60)
