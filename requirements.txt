@@ -1,2 +1,2 @@
 pytz
-dateutil
+python-dateutil
