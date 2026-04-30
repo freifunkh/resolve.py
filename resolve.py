@@ -398,7 +398,7 @@ if __name__ == '__main__':
         values = {}
 
         for n in nodes:
-            keyList : list[str | None] = [None] * numberOfKeys
+            keyList : list[str] = ["None"] * numberOfKeys
             for k, v in nodeinfo(n):
                 if k in keyPositions:
                     keyList[keyPositions[k]] = v
