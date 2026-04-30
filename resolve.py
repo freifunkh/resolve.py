@@ -342,6 +342,8 @@ if __name__ == '__main__':
                         "machine readable")
     parser.add_argument('-s', dest='stat', default=None, metavar="NAME",
                         help="do statisitics about the variable information specified with NAME")
+    parser.add_argument('-g', dest='group_by', type=str, action='append', default=[], metavar="NAME",
+                        help="group statistics by the variable information specified with NAME (multiple values possible, comma separated)")
     parser.add_argument('--gen-bat-hosts', dest='gen_bat_hosts', default=False,
                         action='store_true',
                         help='generate a /etc/bat-hosts file')
@@ -382,27 +384,52 @@ if __name__ == '__main__':
 
     human = args.information is None
 
+    def line():
+        print('-'*60)
+
     if args.stat is not None:
+        keyPositions = {}
+        keyNames = []
+        numberOfKeys = len(args.group_by)
+        for i, n in enumerate(args.group_by):
+            keyPositions[n] = i
+            keyNames.append(n)
+
         values = {}
 
         for n in nodes:
+            keyList : list[str | None] = [None] * numberOfKeys
             for k, v in nodeinfo(n):
-                if k != args.stat:
-                    continue
+                if k in keyPositions:
+                    keyList[keyPositions[k]] = v
+                if k == args.stat:
+                    value = v
 
-                if v not in values:
-                    values[v] = 0
+            key = tuple(keyList)
+            if key not in values:
+                values[key] = {}
 
-                values[v] += 1
+            if value not in values[key]:
+                values[key][value] = 0
 
-        for k, v in values.items():
-            print('{}: {}'.format(k, v))
+            values[key][value] += 1
+
+        for k, v in sorted(values.items()):
+            if numberOfKeys > 0:
+                for i in range(len(args.group_by)):
+                    if i != 0:
+                        print(', ', end='')
+                    print('{}={}'.format(keyNames[i], k[i]), end='')
+
+                print(":\n")
+
+            for stat_value, count in sorted(v.items()):
+                 print('{}: {}'.format(stat_value, count),)
+
+            if numberOfKeys > 0:
+                line()
 
         exit(0)
-
-
-    def line():
-        print('-'*60)
 
     if args.gen_bat_hosts:
         printer = print_bat_hosts
